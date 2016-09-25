@@ -16,7 +16,7 @@ struct mapnode_struct{
 typedef struct mapnode_struct mapnode_t;
 typedef mapnode_t * mapnode;
 
-mapnode new_mapnode(unsigned long , void *, int, void *, int);
+mapnode new_mapnode(unsigned long , void *, void *);
 
 struct hashmap_struct{
 	hashfunction hash;
@@ -33,10 +33,9 @@ hashmap new_hashmap(hashfunction, char *, char *);
 void del_hashmap(hashmap);
 
 //Add values to map
-void add(hashmap, void *, void *);
-void * get(hashmap, void *);
-void * del_node(hashmap, void *);
-void del_hashmap(hashmap);
+void hashmap_add(hashmap, void *, void *);
+void * hashmap_get(hashmap, void *);
+void * hashmap_delete(hashmap, void *);
 void print(hashmap);
 int has(hashmap, void *);
 
