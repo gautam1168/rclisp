@@ -35,8 +35,8 @@ void del_hashmap(hashmap);
 //Add values to map
 void hashmap_add(hashmap, void *, void *);
 void * hashmap_get(hashmap, void *);
-void * hashmap_delete(hashmap, void *);
+void hashmap_delete(hashmap, void *);
 void print(hashmap);
-int has(hashmap, void *);
+int hashmap_has(hashmap, void *);
 
 #endif
