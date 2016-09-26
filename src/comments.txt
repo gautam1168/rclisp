@@ -1,0 +1,20 @@
+Quick summary of my comments from our meeting!
+
+1. Using 'goto' isn't best practice because it can lead to funny scoping issues.
+
+2. Methods that answer yes/no questions like 'has' should probably return booleans.
+This communicates your intent to anyone who needs to interface with your code, and
+save some bugs because it doesn't make sense to do things like '3 + hashmap_has(...)'
+and if something like that every happens the compiler can catch it for you.
+
+3. If you find that you're doing basically the same thing over and over (or ie,
+you ever literally copy-paste code) you should probably move that out to a separate function.
+It'll be easier to read and easier to debug.
+
+4. It's really good to have tests that automatically check themselves- the simplest version
+of this is something like if( function_call != expected_result ) printf("this specific test
+case failed"). Having all your code / possible execution paths covered by tests of what
+the expect behavior is lets you confidently change your code- like say you want to update
+your hashmap collision strategy- having lots of tests will let you be sure nothing else
+secretly got messed up. Also think about edge cases- things like empty input/ boundary input-
+like what happens when the hashmap is empty? what about when it's full?
