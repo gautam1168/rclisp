@@ -5,11 +5,11 @@
 int main(int argc, char **argv){
 	char * st = "gaurav";
 	printf("Create a new hashmap instance\n");
-	hashmap map = new_hashmap(&djb2, "string", "string");
+	hashmap map = new_hashmap(djb2, "string", "string");
 
 	printf("\nCheck hashing function output\n");
 	printf("key: gaurav \nhashed key: %ld\n", djb2("gaurav"));
-	
+
 	char * key, *value;
 	printf("\nInserting values into hashmap\n");
 	key = "gaurav";
@@ -27,12 +27,12 @@ int main(int argc, char **argv){
 	printf("\nPrinting the hashmap\n");
 	print(map);
 
-	printf("\nChecking that the get function works on the hashmap\n");	
-	printf("annie -> %s\n", (char *)hashmap_get(map, (void *)key));
+	printf("\nChecking that the get function works on the hashmap\n");
+	printf("annie -> %s\n", (char *)hashmap_get(map, (void *)key).nd->data);
 	key = "gaurav";
-	printf("gaurav -> %s\n", (char *)hashmap_get(map, (void *)key));
+	printf("gaurav -> %s\n", (char *)hashmap_get(map, (void *)key).nd->data);
 	key = "chakravarthy";
-	printf("chakravarthy -> %s\n", (char *)hashmap_get(map, (void *)key));
+	printf("chakravarthy -> %s\n", (char *)hashmap_get(map, (void *)key).nd->data);
 
 	printf("\nChecking that the has function works on the hashmap\n");
 	printf("Map has key- chakravarthy: %d\n", hashmap_has(map, (void *)key));
