@@ -4,8 +4,8 @@
 #include "NFA.h"
 
 struct regex_struct{
-    automaton FSM;
-    automaton * machinestate;
+    FSM_t machine;
+    char * regexpattern;
 };
 
 typedef struct regex_struct regex_t;
