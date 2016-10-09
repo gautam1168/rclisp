@@ -161,7 +161,7 @@ automaton FSM_popstate(FSM machine){
   return NFA;
 }
 
-void run_FSM(FSM machine, char * message){
+int run_FSM(FSM machine, char * message){
     //Traverse state queue
     // automaton NFA = pop(machine->currstate);
     automaton NFA = FSM_popstate(machine);
@@ -169,13 +169,15 @@ void run_FSM(FSM machine, char * message){
     int new_statelength = 0;
     while(NFA){
       if (NFA == machine->end_state){
-        printf("Machine stopped!!!\n");
+        printf("Machine is in end state!! Stopping execution.\n");
+        return 0;
       }
       else{
-        printf("message:%s, \nindex:%d\n", message, 0);
         for (int i=0; i < NFA->num_connections; i++){
-          newstate = push(newstate, NFA->connected_automata[i]);
-          new_statelength++;
+          if (strcmp(message, NFA->messages[i]) == 0){
+            newstate = push(newstate, NFA->connected_automata[i]);
+            new_statelength++;
+          }
         }
       }
 
@@ -185,4 +187,34 @@ void run_FSM(FSM machine, char * message){
     machine->state_length = new_statelength;
     free(machine->currstate);
     machine->currstate = newstate;
+    if (new_statelength == 0){
+      printf("Machine's currstate has no more nodes!\n");
+      return -1;
+    }
+    else if(new_statelength == 1 && machine->currstate->NFA == machine->end_state){
+      return 0;
+    }
+    return 1;
+}
+
+void match_FSM(FSM machine, message msg, int num_message){
+  int machinelive;
+  for (int i = 0; i < num_message; i++){
+    machinelive = run_FSM(machine, msg[i].string);
+    if (machinelive < 1){
+      break;
+    }
+  }
+  if (machinelive == 1){
+    printf("Machine is bigger than message array.\n");
+  }
+  else if (machinelive == -1){
+    printf("Looks like there was no match!\n");
+  }
+  else if (machinelive == 0){
+    printf("Machine in end state. Match complete.\n");
+  }
+  else{
+    printf("There's a ghost here.\n");
+  }
 }

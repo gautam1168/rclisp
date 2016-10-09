@@ -2,6 +2,8 @@
 int main(int argc, char ** argv){
   printf("Create and print automata\n");
   //Create new NFA
+  automaton FA0 = new_automaton("");
+  print_automaton(FA0);
   automaton FA1 = new_automaton("a");
   print_automaton(FA1);
   automaton FA2 = new_automaton("b");
@@ -12,6 +14,9 @@ int main(int argc, char ** argv){
 
   printf("Connect the automata\n");
   //Connect the automata
+  NFA_connect(FA0, "A", FA1);
+  printf("FA0:\n");
+  print_automaton(FA0);
   NFA_connect(FA1, "B", FA2);
   printf("FA1:\n");
   print_automaton(FA1);
@@ -24,7 +29,8 @@ int main(int argc, char ** argv){
 
   //New automaton queue
   printf("Create a queue and push the automata on\n");
-  fifo_node queue = new_fifo_queue(FA1, NULL);
+  fifo_node queue = new_fifo_queue(FA0, NULL);
+  queue = push(queue, FA1);
   queue = push(queue, FA2);
   queue = push(queue, FA3);
   printf("Automaton queue:\n");
@@ -42,13 +48,15 @@ int main(int argc, char ** argv){
 
   //Make a new machine
   printf("Create finite state machine:\n");
-  FSM machine = new_FSM(FA1, FA3);
+  FSM machine = new_FSM(FA0, FA3);
   print_FSM(machine);
   printf("--------------------------\n\n");
 
   printf("running machine:\n");
-  run_FSM(machine, "B");
-  run_FSM(machine, "C");
-  run_FSM(machine, "X");
+  message_t message[3];
+  message[0].string = "A";
+  message[1].string = "B";
+  message[2].string = "C";
+  match_FSM(machine, message, 3);
   return 0;
 }

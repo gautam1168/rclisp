@@ -51,6 +51,12 @@ automaton pop(fifo_node queue);
 fifo_node new_fifo_queue(automaton NFA, fifo_node next);
 void print_queue(fifo_node queue);
 
+struct message_struct{
+  char * string;
+};
+typedef struct message_struct message_t;
+typedef message_t * message;
+
 //Finite state machine
 /*
  * Functions
@@ -68,7 +74,9 @@ typedef FSM_t * FSM;
 //Create new machine
 FSM new_FSM(automaton start, automaton end);
 //Send a message to a machine to change its state
-void run_FSM(FSM machine, char * message);
+int run_FSM(FSM machine, char * message);
+//Match an array of messages
+void match_FSM(FSM machine, message msg, int num_message);
 //Print FSM
 void print_FSM(FSM machine);
 #endif
