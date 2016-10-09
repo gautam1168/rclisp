@@ -14,7 +14,7 @@ void print_automaton(automaton NFA){
   printf("marked: %d, \nstate: %s, \nnum_connections: %d, \nspace: %d, \nmessages:\n",
           NFA->marked, NFA->state, NFA->num_connections, NFA->space);
   for (int i=0; i<NFA->num_connections; i++){
-    printf("%d: %s\n", i, NFA->messages[i]);
+    printf("\t%d: %s\n", i, NFA->messages[i]);
   }
   printf("\n");
 }
@@ -84,18 +84,13 @@ fifo_node new_fifo_queue(automaton NFA, fifo_node next){
 
 fifo_node push(fifo_node head, automaton NFA){
   //Pushing node to non-empty list (node may be null)
-  if (head != NULL){
+  if (NFA != NULL){
     return new_fifo_queue(NFA, head);
-  }
-  //Pushing non-empty node to empty queue
-  else if (NFA != NULL){
-    fifo_node nd = (fifo_node)malloc(sizeof(fifo_node_t));
-    nd->NFA = NFA;
-    nd->next = NULL;
   }
   //Invalid operations
   else{
     printf("Cannot push NULL to empty queue!\n");
+    return NULL;
   }
 }
 
@@ -117,6 +112,11 @@ automaton pop(fifo_node head){
   else{
     returnval = curr->NFA;
     free(curr);
+    //TODO: This doesn't work. This is why you shouldn't use
+    //just the node as a queue. Make a structure for node and
+    //another for storing the head node (the queue)
+    //A fifo_node with no NFA is not defined so destroy head
+    head = NULL;
   }
   return returnval;
 }
@@ -137,6 +137,7 @@ FSM new_FSM(automaton start, automaton end){
   machine->end_state = end;
   //Machine starts in the start_state
   machine->currstate = new_fifo_queue(start, NULL);
+  machine->state_length = 1;
 }
 
 void print_FSM(FSM machine){
@@ -147,11 +148,25 @@ void print_FSM(FSM machine){
   print_queue(machine->currstate);
 }
 
+automaton FSM_popstate(FSM machine){
+  automaton NFA = NULL;
+  if (machine->currstate){
+    NFA = pop(machine->currstate);
 
-automaton * run_FSM(FSM machine, char * message){
+    //Destroy state queue when empty
+    if (machine->currstate->NFA == NULL){
+      machine->currstate = NULL;
+    }
+  }
+  return NFA;
+}
+
+void run_FSM(FSM machine, char * message){
     //Traverse state queue
-    automaton NFA = pop(machine->currstate);
+    // automaton NFA = pop(machine->currstate);
+    automaton NFA = FSM_popstate(machine);
     fifo_node newstate = NULL;
+    int new_statelength = 0;
     while(NFA){
       if (NFA == machine->end_state){
         printf("Machine stopped!!!\n");
@@ -160,8 +175,14 @@ automaton * run_FSM(FSM machine, char * message){
         printf("message:%s, \nindex:%d\n", message, 0);
         for (int i=0; i < NFA->num_connections; i++){
           newstate = push(newstate, NFA->connected_automata[i]);
+          new_statelength++;
         }
       }
-      NFA = pop(machine->currstate);
+
+      // NFA = pop(machine->currstate);
+      NFA = FSM_popstate(machine);
     }
+    machine->state_length = new_statelength;
+    free(machine->currstate);
+    machine->currstate = newstate;
 }

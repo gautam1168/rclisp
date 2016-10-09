@@ -68,7 +68,7 @@ typedef FSM_t * FSM;
 //Create new machine
 FSM new_FSM(automaton start, automaton end);
 //Send a message to a machine to change its state
-automaton * run_FSM(FSM machine, char * message);
+void run_FSM(FSM machine, char * message);
 //Print FSM
 void print_FSM(FSM machine);
 #endif
