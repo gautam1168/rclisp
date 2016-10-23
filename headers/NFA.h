@@ -82,4 +82,7 @@ void print_FSM(FSM machine);
 bool FSM_test(FSM machine, char * string);
 //Rest the machine to initial state
 void reset_FSM(FSM machine);
+
+//Compile string to machine
+FSM compile_FSM(char * regex);
 #endif

@@ -46,7 +46,7 @@ void NFA_connect(automaton NFA, char * msg, automaton connect_NFA){
   }
   //Insert data
   NFA->messages[NFA->num_connections].string = (char *)malloc(strlen(msg)*sizeof(char));
-  NFA->messages[NFA->num_connections].string = msg;
+  memcpy(NFA->messages[NFA->num_connections].string, msg, sizeof(char));
   // NFA->connected_automata[NFA->num_connections] = (automaton)malloc(sizeof(automaton_t));
   NFA->connected_automata[NFA->num_connections] = connect_NFA;
   //Update number of connections
@@ -253,4 +253,29 @@ void reset_FSM(FSM machine){
   machine->currstate = NULL;
   machine->currstate = new_fifo_queue(machine->start_state, NULL);
   machine->state_length = 1;
+}
+
+FSM compile_FSM(char * regex){
+  //Iterate over the string
+  int len = strlen(regex);
+  char * msg, * statestring;
+  msg = (char *)malloc(sizeof(char));
+  automaton start = new_automaton(""), curr = start, next;
+
+  for (int i = 0; i < len; i++){
+    *msg = regex[i];
+    statestring = (char *)malloc((i+1)*sizeof(char));
+    memcpy((void *)statestring, (void *)regex, (i+1)*sizeof(char));
+    //For each character create a NFA in serial
+    next = new_automaton(statestring);
+    NFA_connect(curr, msg, next);
+    curr = next;
+    //If character is [ then create NFA in branches
+    //If character is ] then merge all branches
+    //If character is * then branch back
+    //If character is + then create new node then branch back
+  }
+  //Return machine
+  FSM machine = new_FSM(start, curr);
+  return machine;
 }

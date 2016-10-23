@@ -4,7 +4,7 @@
 #include "NFA.h"
 
 struct regex_struct{
-    FSM_t machine;
+    FSM machine;
     char * regexpattern;
 };
 
