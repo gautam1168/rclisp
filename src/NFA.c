@@ -46,7 +46,8 @@ void NFA_connect(automaton NFA, char * msg, automaton connect_NFA){
   }
   //Insert data
   NFA->messages[NFA->num_connections].string = (char *)malloc(strlen(msg)*sizeof(char));
-  memcpy(NFA->messages[NFA->num_connections].string, msg, sizeof(char));
+  NFA->messages[NFA->num_connections].string = msg;
+  // memcpy(NFA->messages[NFA->num_connections].string, msg, sizeof(char));
   // NFA->connected_automata[NFA->num_connections] = (automaton)malloc(sizeof(automaton_t));
   NFA->connected_automata[NFA->num_connections] = connect_NFA;
   //Update number of connections
@@ -259,10 +260,10 @@ FSM compile_FSM(char * regex){
   //Iterate over the string
   int len = strlen(regex);
   char * msg, * statestring;
-  msg = (char *)malloc(sizeof(char));
   automaton start = new_automaton(""), curr = start, next;
 
   for (int i = 0; i < len; i++){
+    msg = (char *)malloc(sizeof(char));
     *msg = regex[i];
     statestring = (char *)malloc((i+1)*sizeof(char));
     memcpy((void *)statestring, (void *)regex, (i+1)*sizeof(char));
