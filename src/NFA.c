@@ -226,14 +226,26 @@ bool FSM_test(FSM machine, char * string){
   int msglen = strlen(string), machinelive;
   printf("Running machine with: %s\n", string);
   char * msg = (char *)malloc(sizeof(char));
+  int numMatches = 0;
+
   for (int i = 0; i < msglen; i++){
     *msg = string[i];
     machinelive = run_FSM(machine, msg);
+    //If a match is found
+    if (machinelive == 0){
+      numMatches++;
+      reset_FSM(machine);
+    }
+    //If machine failed to match
+    else if (machinelive == -1){
+      reset_FSM(machine);
+    }
     printf("message: %c, machinestate: %d\n",
             string[i], machinelive);
   }
   printf("\n----------------------------------\n");
-  return true;
+  printf("Number of matches found: %d\n", numMatches);
+  return (numMatches > 0)?true:false;
 }
 
 void reset_FSM(FSM machine){
