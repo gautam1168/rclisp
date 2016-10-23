@@ -10,6 +10,8 @@ int main(int argc, char ** argv){
   print_automaton(FA2);
   automaton FA3 = new_automaton("c");
   print_automaton(FA3);
+  automaton FA4 = new_automaton("d");
+  print_automaton(FA4);
   printf("-------------------------\n\n");
 
   printf("Connect the automata\n");
@@ -21,6 +23,8 @@ int main(int argc, char ** argv){
   printf("FA1:\n");
   print_automaton(FA1);
   NFA_connect(FA2, "C", FA3);
+  // NFA_connect(FA1, "D", FA4);
+  // NFA_connect(FA4, "B", FA1);
   printf("FA2:\n");
   print_automaton(FA2);
   printf("FA3:\n");
@@ -58,5 +62,8 @@ int main(int argc, char ** argv){
   message[1].string = "B";
   message[2].string = "C";
   match_FSM(machine, message, 3);
+
+  printf("Printing FSM\n");
+  NFA_display(FA0, "none");
   return 0;
 }

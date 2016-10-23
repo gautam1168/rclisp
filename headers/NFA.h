@@ -79,4 +79,7 @@ int run_FSM(FSM machine, char * message);
 void match_FSM(FSM machine, message msg, int num_message);
 //Print FSM
 void print_FSM(FSM machine);
+bool FSM_test(FSM machine, char * string);
+//Rest the machine to initial state
+void reset_FSM(FSM machine);
 #endif

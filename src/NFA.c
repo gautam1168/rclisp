@@ -58,7 +58,10 @@ void NFA_display(automaton starting_state, char * filename){
   fifo_node nd = new_fifo_queue(starting_state, NULL);
 
   automaton NFA;
-  while (NFA = pop(nd)){
+  if (nd->NFA == NULL){nd = NULL;}
+  while (nd){
+    NFA = pop(nd);
+    if (nd->NFA == NULL){nd = NULL;}
     //If the current node is not marked then print it, mark it and push all its
     //unmarked neighbors
     if (! NFA->marked){
@@ -188,7 +191,7 @@ int run_FSM(FSM machine, char * message){
     free(machine->currstate);
     machine->currstate = newstate;
     if (new_statelength == 0){
-      printf("Machine's currstate has no more nodes!\n");
+      // printf("Machine's currstate has no more nodes!\n");
       return -1;
     }
     else if(new_statelength == 1 && machine->currstate->NFA == machine->end_state){
@@ -217,4 +220,25 @@ void match_FSM(FSM machine, message msg, int num_message){
   else{
     printf("There's a ghost here.\n");
   }
+}
+
+bool FSM_test(FSM machine, char * string){
+  int msglen = strlen(string), machinelive;
+  printf("Running machine with: %s\n", string);
+  char * msg = (char *)malloc(sizeof(char));
+  for (int i = 0; i < msglen; i++){
+    *msg = string[i];
+    machinelive = run_FSM(machine, msg);
+    printf("message: %c, machinestate: %d\n",
+            string[i], machinelive);
+  }
+  printf("\n----------------------------------\n");
+  return true;
+}
+
+void reset_FSM(FSM machine){
+  free(machine->currstate);
+  machine->currstate = NULL;
+  machine->currstate = new_fifo_queue(machine->start_state, NULL);
+  machine->state_length = 1;
 }
