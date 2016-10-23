@@ -6,7 +6,7 @@ automaton new_automaton(char * state){
   NFA->state = state;
   NFA->num_connections = 0;
   NFA->space = 1;
-  NFA->messages = (char **)malloc(sizeof(char *));
+  NFA->messages = (message)malloc(sizeof(message_t));
   NFA->connected_automata = (automaton *)malloc(sizeof(automaton));
 }
 
@@ -14,7 +14,7 @@ void print_automaton(automaton NFA){
   printf("marked: %d, \nstate: %s, \nnum_connections: %d, \nspace: %d, \nmessages:\n",
           NFA->marked, NFA->state, NFA->num_connections, NFA->space);
   for (int i=0; i<NFA->num_connections; i++){
-    printf("\t%d: %s\n", i, NFA->messages[i]);
+    printf("\t%d: %s\n", i, NFA->messages[i].string);
   }
   printf("\n");
 }
@@ -26,11 +26,11 @@ void NFA_connect(automaton NFA, char * msg, automaton connect_NFA){
     int space_to_allocate = 2*NFA->space;
 
     //Create new array for messages
-    char ** msgs = (char **)malloc(space_to_allocate*sizeof(char *));
+    message msgs = (message)malloc(space_to_allocate*sizeof(message_t));
     automaton * states = (automaton *)malloc(space_to_allocate*sizeof(automaton));
 
     //Copy over the old data
-    memcpy(msgs, NFA->messages, NFA->space*sizeof(char *));
+    memcpy(msgs, NFA->messages, NFA->space*sizeof(message_t));
     memcpy(states, NFA->connected_automata, NFA->space*sizeof(automaton));
 
     //Free the old memory
@@ -45,8 +45,8 @@ void NFA_connect(automaton NFA, char * msg, automaton connect_NFA){
     NFA->space = space_to_allocate;
   }
   //Insert data
-  NFA->messages[NFA->num_connections] = (char *)malloc(strlen(msg)*sizeof(char));
-  NFA->messages[NFA->num_connections] = msg;
+  NFA->messages[NFA->num_connections].string = (char *)malloc(strlen(msg)*sizeof(char));
+  NFA->messages[NFA->num_connections].string = msg;
   // NFA->connected_automata[NFA->num_connections] = (automaton)malloc(sizeof(automaton_t));
   NFA->connected_automata[NFA->num_connections] = connect_NFA;
   //Update number of connections
@@ -174,7 +174,7 @@ int run_FSM(FSM machine, char * message){
       }
       else{
         for (int i=0; i < NFA->num_connections; i++){
-          if (strcmp(message, NFA->messages[i]) == 0){
+          if (strcmp(message, NFA->messages[i].string) == 0){
             newstate = push(newstate, NFA->connected_automata[i]);
             new_statelength++;
           }

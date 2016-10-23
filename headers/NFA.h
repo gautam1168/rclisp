@@ -6,6 +6,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+struct message_struct{
+  char * string;
+};
+typedef struct message_struct message_t;
+typedef message_t * message;
+
 //Structure to represent an automaton
 /* Functions:
  * 1. Store a string state
@@ -16,7 +22,7 @@
 struct automaton_struct{
     bool marked;
     char * state;
-    char ** messages;
+    message messages;
     int num_connections, space;
     struct automaton_struct ** connected_automata;
 };
@@ -50,12 +56,6 @@ automaton pop(fifo_node queue);
 //Accordingly this constructor simply returns a fifo_node
 fifo_node new_fifo_queue(automaton NFA, fifo_node next);
 void print_queue(fifo_node queue);
-
-struct message_struct{
-  char * string;
-};
-typedef struct message_struct message_t;
-typedef message_t * message;
 
 //Finite state machine
 /*
