@@ -146,13 +146,31 @@ char * eatbase(char * base, char * string){
 }
 
 regex new_regex(char * regular_expression){
-    printf("Original string: %s\n", regular_expression);
-    printf("Substrings:\n");
-    char ** substrs = termsplit(regular_expression, '|');
-    printStrArray(substrs);
-    printf("----------------\n");
-    char * string = "(ab|c)d";
-    printf("Original string: %s\n", string);
-    printf("Peek base: %s\n", peekbase(string));
-    printf("Eaten base: %s\n", eatbase("(ab|c)", string));
+    regex r = (regex)malloc(sizeof(regex_t));
+    int stringsize = sizeof(char)*strlen(regular_expression);
+    r->pattern = (char *)malloc(stringsize);
+    memcpy(r->pattern, regular_expression, stringsize);
+
+    automaton start = new_automaton(""), end = new_automaton("");
+    regex_compile(r->pattern, start);
+    r->machine = new_FSM(start, end);
+
+    return r;
+}
+
+void regex_compile(char * input, automaton root){
+    if (strlen(input) > 0){
+        printf("Compiling string: %s\n", input);
+        char ** substrs = termsplit(input, '|');
+        char * base;
+        automaton nextFA;
+
+        for (int i = 0; i < strArrayLen(substrs); i++){
+            base = peekbase(substrs[i]);
+            nextFA = new_automaton(base);
+            NFA_connect(root, base, nextFA);
+
+            regex_compile(eatbase(base, substrs[i]), nextFA);
+        }
+    }
 }

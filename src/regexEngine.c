@@ -1,6 +1,6 @@
 #include <regex.h>
 
 int main(int argc, char * argv){
-    new_regex("flda|skg(ag|d)ljk|fdsak|sa");
+    regex regxp = new_regex("sasd");
     return 0;
 }
