@@ -162,12 +162,20 @@ void regex_compile(char * input, automaton root){
     if (strlen(input) > 0){
         printf("Compiling string: %s\n", input);
         char ** substrs = termsplit(input, '|');
-        char * base;
+        char * base, * state;
         automaton nextFA;
 
         for (int i = 0; i < strArrayLen(substrs); i++){
             base = peekbase(substrs[i]);
-            nextFA = new_automaton(base);
+            state = (char *)malloc(sizeof(char)*
+                                   (strlen(root->state)+strlen(base)));
+            strcpy(state, root->state);
+            strcat(state, base);
+            printf("State: %s\n", state);
+            nextFA = new_automaton(state);
+            if (strlen(input) == 1){
+                nextFA->isendstate = true;
+            }
             NFA_connect(root, base, nextFA);
 
             regex_compile(eatbase(base, substrs[i]), nextFA);

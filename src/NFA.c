@@ -2,6 +2,7 @@
 
 automaton new_automaton(char * state){
   automaton NFA = (automaton)malloc(sizeof(automaton_t));
+  NFA->isendstate = false;
   NFA->marked = false;
   NFA->state = state;
   NFA->num_connections = 0;
@@ -195,7 +196,9 @@ int run_FSM(FSM machine, char * message){
       // printf("Machine's currstate has no more nodes!\n");
       return -1;
     }
-    else if(new_statelength == 1 && machine->currstate->NFA == machine->end_state){
+    else if(new_statelength == 1 && 
+                 (machine->currstate->NFA == machine->end_state ||
+                  machine->currstate->NFA->isendstate)){
       return 0;
     }
     return 1;
