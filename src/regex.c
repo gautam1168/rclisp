@@ -99,14 +99,7 @@ void printStrArray(char ** arr){
 
 char * peekbase(char * string){
     char * output;
-    if (*string != '('){
-        printf("Processing normal char: %c\n", *string);
-        output = (char *)malloc(sizeof(char)*2);
-        output[0] = *string;
-        output[1] = '\0';
-    }
-    
-    else if(*string == '('){
+    if(*string == '('){
         char * itr;
         int loc=0;
         itr = string+1;
@@ -122,6 +115,18 @@ char * peekbase(char * string){
         memset(output, '\0', loc);
         memcpy(output, string+1, loc);
     }
+	else if (*(string+1) == '*'){
+		output = (char *)malloc(sizeof(char)*3);
+		output[0] = *string;
+		output[1] = *(string+1);
+		output[2] = '\0';
+	}   
+	else {
+        output = (char *)malloc(sizeof(char)*2);
+        output[0] = *string;
+        output[1] = '\0';
+    }
+
     return output;
 }
 
@@ -129,8 +134,6 @@ char * peekbase(char * string){
 char * eatbase(char * base, char * string){
     char * output;
     int stringlength = strlen(string), baselength = strlen(base);
-    printf("Input stringlength: %d, baselength: %d\n", 
-            stringlength, baselength);
     
     for (int i = 0; i < baselength; i++){
         if (*base != *string){
@@ -160,7 +163,6 @@ regex new_regex(char * regular_expression){
 
 void regex_compile(char * input, automaton root){
     if (strlen(input) > 0){
-        printf("Compiling string: %s\n", input);
         char ** substrs = termsplit(input, '|');
         char * base, * state;
         automaton nextFA;
@@ -171,12 +173,24 @@ void regex_compile(char * input, automaton root){
                                    (strlen(root->state)+strlen(base)));
             strcpy(state, root->state);
             strcat(state, base);
-            printf("State: %s\n", state);
             nextFA = new_automaton(state);
-            if (strlen(input) == 1){
-                nextFA->isendstate = true;
-            }
-            NFA_connect(root, base, nextFA);
+            
+			if (base[1] == '*'){
+				char * msg = (char *)malloc(2*sizeof(char));
+				msg[0] = base[0];
+			   	msg[1] = '\0';	
+				NFA_connect(root, msg, root);
+				NFA_connect(root, msg, nextFA);
+				if (strlen(input) == 2){
+					root->isendstate = true;
+				}
+			}
+			else{
+            	NFA_connect(root, base, nextFA);
+				if (strlen(input) == 1){
+                	nextFA->isendstate = true;
+            	}
+			}
 
             regex_compile(eatbase(base, substrs[i]), nextFA);
         }

@@ -173,7 +173,7 @@ int run_FSM(FSM machine, char * message){
     fifo_node newstate = NULL;
     int new_statelength = 0;
     while(NFA){
-      if (NFA == machine->end_state){
+      if (NFA == machine->end_state || NFA->isendstate){
         printf("Machine is in end state!! Stopping execution.\n");
         return 0;
       }
