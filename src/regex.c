@@ -115,7 +115,7 @@ char * peekbase(char * string){
         memset(output, '\0', loc);
         memcpy(output, string+1, loc);
     }
-	else if (*(string+1) == '*'){
+	else if (*(string+1) == '*' || *(string+1) == '+'){
 		output = (char *)malloc(sizeof(char)*4);
 		output[0] = *string;
 		output[1] = *(string+1);
@@ -169,31 +169,48 @@ void regex_compile(char * input, automaton root){
         automaton nextFA;
 
         for (int i = 0; i < strArrayLen(substrs); i++){
-            printf("Compiling base of term: %s\n", substrs[i]);
             base = peekbase(substrs[i]);
-            printf("Base: %s\n", base);
             state = (char *)malloc(sizeof(char)*
                                    (strlen(root->state)+strlen(base)));
             strcpy(state, root->state);
             strcat(state, base);
-            printf("State of next automaton: %s\n", state);
             nextFA = new_automaton(state);
 
 			      if (base[1] == '*'){
 				        char * msg = (char *)malloc(2*sizeof(char));
 				        msg[0] = base[0];
 			   	      msg[1] = '\0';
-                printf("Connecting self with message: %s\n", msg);
 				        NFA_connect(root, msg, root);
                 msg = (char *)malloc(2*sizeof(char));
                 msg[0] = base[2];
                 msg[1] = '\0';
-                printf("Connecting next NFA with message: %s\n", msg);
 				        NFA_connect(root, msg, nextFA);
 				        if (strlen(input) == 2){
 					          root->isendstate = true;
 				        }
 			      }
+            else if (base[1] == '+'){
+              char * intermstate = (char *)malloc(sizeof(char)*
+                                            (strlen(root->state)+1));
+              char * msg = (char *)malloc(2*sizeof(char));
+              msg[0] = base[0];
+              msg[1] = '\0';
+              strcpy(intermstate, root->state);
+              strcat(intermstate, msg);
+              automaton intermediateFA= new_automaton(intermstate);
+              NFA_connect(root, msg, intermediateFA);
+              msg = (char *)malloc(2*sizeof(char));
+              msg[0] = base[0];
+              msg[1] = '\0';
+              NFA_connect(intermediateFA, msg, intermediateFA);
+              msg = (char *)malloc(2*sizeof(char));
+              msg[0] = base[2];
+              msg[1] = '\0';
+              NFA_connect(intermediateFA, msg, nextFA);
+              if (strlen(input) == 2){
+                  root->isendstate = true;
+              }
+            }
 			      else{
             	  NFA_connect(root, base, nextFA);
 				        if (strlen(input) == 1){
