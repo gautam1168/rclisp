@@ -18,7 +18,8 @@ int main(int argc, char * argv){
 	printf("\nCreate regex: ga*urav\n");
 	regex regxp3 = new_regex("ga*urav");
 	printf("\nTest against string gaurav\n");
-	//FSM_test(regxp3->machine, "gaurav");
+	FSM_test(regxp3->machine, "gurav");
+	FSM_test(regxp3->machine, "gaaurav");
 
-    return 0;
+  return 0;
 }
