@@ -27,5 +27,15 @@ int main(int argc, char * argv){
 	FSM_test(regxp4->machine, "gaurav");
 	printf("\nTest against string gurav\n");
 	FSM_test(regxp4->machine, "gurav");
+
+	printf("\nCreate regex: ga?urav\n");
+	regex regxp5 = new_regex("ga?urav");
+	printf("\nTest against string gaurav");
+	FSM_test(regxp5->machine, "gaurav");
+	printf("\ntest against string gurav\n");
+	FSM_test(regxp5->machine, "gurav");
+	printf("\ntest against string gaaurav\n");
+	FSM_test(regxp5->machine, "gaaurav");
+
   return 0;
 }
