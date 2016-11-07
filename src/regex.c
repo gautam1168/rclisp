@@ -115,6 +115,35 @@ char * peekbase(char * string){
         memset(output, '\0', loc);
         memcpy(output, string+1, loc);
     }
+    else if(*string == '['){
+        printf("Peeking square bracket base\n");
+        char * itr;
+        int loc=0;
+        itr = string;
+        while (*itr != ']' && *itr != '\0'){
+            if (*itr == '\0'){
+                printf("Unbalanced brackets\n");
+                return NULL;
+            }
+            loc++;
+            itr++;
+        }
+        printf("End location of base: %d %c\n", loc, string[loc]);
+        //Check if base is followed by any special characters
+        if (string[loc+1] == '*' || string[loc+1] == '+' || string[loc+1] == '?'){
+          printf("Base followed by special characters\n");
+          output = (char *)malloc(sizeof(char)*(loc+3));
+          memset(output, '\0', loc+3);
+          memcpy(output, string, loc+2);
+        }
+        else{
+          printf("Base not followed by special characters\n");
+          output = (char *)malloc(sizeof(char)*(loc+2));
+          memset(output, '\0', loc+2);
+          memcpy(output, string, loc+1);
+        }
+        printf("Base returned: %s\n", output);
+    }
 	else if (*(string+1) == '*' || *(string+1) == '+' || *(string+1) == '?'){
 		output = (char *)malloc(sizeof(char)*4);
 		output[0] = *string;
@@ -166,7 +195,7 @@ void regex_compile(char * input, automaton root){
     if (strlen(input) > 0){
         char ** substrs = termsplit(input, '|');
         char * base, * state;
-        automaton nextFA;
+        automaton nextFA, ephemeral;
 
         for (int i = 0; i < strArrayLen(substrs); i++){
             base = peekbase(substrs[i]);
@@ -233,10 +262,55 @@ void regex_compile(char * input, automaton root){
                   root->isendstate = true;
               }
             }
+            else if (base[0] == '['){
+              //Connect ephemeral state with "dot" message
+              // printf("Compiling base in square brackets\n");
+              ephemeral = new_automaton("[]");
+              ephemeral->isephemeral = true;
+              NFA_connect(root, "dot", ephemeral);
+              // printf("Base obtained: %s\n", base);
+              if (base[2] == '-'){
+                char curr = base[1], end = base[3];
+                int j = 0;
+                char * msg;
+                while (curr+j <= end){
+                  msg = (char *)malloc(sizeof(char)*2);
+                  msg[0] = curr+j;
+                  msg[1] = '\0';
+                  // printf("rootstate: %s message: %s\n", root->state, msg);
+                  char * nextstate = (char *)malloc(sizeof(char)*(
+                        strlen(root->state)+2
+                  ));
+                  memset(nextstate, '\0', strlen(root->state)+2);
+                  memcpy(nextstate, root->state, strlen(root->state));
+                  strcat(nextstate, msg);
+                  nextFA = new_automaton(nextstate);
+                  // printf("NextFA created with state: %s\n", nextstate);
+                  NFA_connect(ephemeral, msg, nextFA);
+                  // printf("Compiling %c\n", curr+j);
+                  j++;
+                  regex_compile(eatbase(base, substrs[i]), nextFA);
+                }
+              }
+              else{
+                char * msg;
+                for (int j = 1; j < strlen(base)-1; j++){
+                    msg = (char *)malloc(sizeof(char)*2);
+                    msg[0] = base[j];
+                    msg[1] = '\0';
+                    // printf("rootstate: %s message: %s\n", root->state, msg);
+                    nextFA = new_automaton(msg);
+                    NFA_connect(ephemeral, msg, nextFA);
+                    // printf("Compiling %c\n", base[j]);
+                    regex_compile(eatbase(base, substrs[i]), nextFA);
+                }
+              }
+            }
 			      else{
             	  NFA_connect(root, base, nextFA);
 				        if (strlen(input) == 1){
                 	 nextFA->isendstate = true;
+                  //  printf("End state is set\n");
             	  }
 			      }
 

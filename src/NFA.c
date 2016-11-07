@@ -3,6 +3,7 @@
 automaton new_automaton(char * state){
   automaton NFA = (automaton)malloc(sizeof(automaton_t));
   NFA->isendstate = false;
+  NFA->isephemeral = false;
   NFA->marked = false;
   NFA->state = state;
   NFA->num_connections = 0;
@@ -169,19 +170,46 @@ automaton FSM_popstate(FSM machine){
 int run_FSM(FSM machine, char * message){
     //Traverse state queue
     // automaton NFA = pop(machine->currstate);
-    automaton NFA = FSM_popstate(machine);
+    //Get automaton from machine's currstate
+    automaton NFA = FSM_popstate(machine), ephemeral;
     fifo_node newstate = NULL;
     int new_statelength = 0;
     while(NFA){
+      //If this state is an end state then stop machine in finished state
       if (NFA == machine->end_state || NFA->isendstate){
         printf("Machine is in end state!! Stopping execution.\n");
         return 0;
       }
       else{
+        //Iterate over all connections of current automaton
         for (int i=0; i < NFA->num_connections; i++){
-          if (strcmp(message, NFA->messages[i].string) == 0){
-            newstate = push(newstate, NFA->connected_automata[i]);
-            new_statelength++;
+          // printf("%s:%s -> %s ", NFA->state, message,
+          //                       NFA->connected_automata[i]->state);
+          //Check if the connection message is compatible with current msg
+          if (strcmp(NFA->messages[i].string, "dot") == 0 ||
+              strcmp(message, NFA->messages[i].string) == 0){
+            //If the connected state is ephemeral
+            if (NFA->connected_automata[i]->isephemeral){
+                // printf("Ephemeral state reached\n");
+                ephemeral = NFA->connected_automata[i];
+                //Iterate over all of its connections
+                for (int j=0; j < ephemeral->num_connections; j++){
+                    //If the message is compatible to connections on ephemeral state
+                    if (strcmp(message, "dot") == 0 ||
+                        strcmp(message, ephemeral->messages[j].string) == 0){
+                      //Push the connected automata on the new state queue
+                      newstate = push(newstate, ephemeral->connected_automata[j]);
+                      new_statelength++;
+                    }
+                }
+            }
+            //If state is not ephemeral
+            else{
+              // printf("Normal state\n");
+              //Push the connected state to the new state queue
+              newstate = push(newstate, NFA->connected_automata[i]);
+              new_statelength++;
+            }
           }
         }
       }
@@ -196,7 +224,7 @@ int run_FSM(FSM machine, char * message){
       // printf("Machine's currstate has no more nodes!\n");
       return -1;
     }
-    else if(new_statelength == 1 && 
+    else if(new_statelength == 1 &&
                  (machine->currstate->NFA == machine->end_state ||
                   machine->currstate->NFA->isendstate)){
       return 0;
@@ -249,6 +277,7 @@ bool FSM_test(FSM machine, char * string){
   }
   printf("\n----------------------------------\n");
   printf("Number of matches found: %d\n", numMatches);
+  reset_FSM(machine);
   return (numMatches > 0)?true:false;
 }
 

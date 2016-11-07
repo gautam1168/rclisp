@@ -20,7 +20,7 @@ typedef message_t * message;
  *    other states
 **/
 struct automaton_struct{
-    bool marked, isendstate;
+    bool marked, isendstate, isephemeral;
     char * state;
     message messages;
     int num_connections, space;

@@ -37,5 +37,15 @@ int main(int argc, char * argv){
 	printf("\ntest against string gaaurav\n");
 	FSM_test(regxp5->machine, "gaaurav");
 
+	printf("\nCreate regex abc[0-9]de\n");
+	regex regxp6 = new_regex("abc[0-9]de");
+	printf("\ntest against string abc0de\n");
+	FSM_test(regxp6->machine, "abc0de");
+	reset_FSM(regxp6->machine);
+	printf("\ntest against string abc2de\n");
+	FSM_test(regxp6->machine, "abc2de");
+
+	printf("\nCreate regex abc[0789]*de\n");
+	regex regxp7 = new_regex("abc[0789]*de");
   return 0;
 }
