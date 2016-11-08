@@ -262,6 +262,59 @@ void regex_compile(char * input, automaton root){
                   root->isendstate = true;
               }
             }
+            else if (base[0] == '[' && base[strlen(base)-1] == '*'){
+              //Connect ephemeral state with "dot" message
+              // printf("Compiling base in square brackets\n");
+              ephemeral = new_automaton("[]");
+              ephemeral->isephemeral = true;
+              NFA_connect(root, "dot", ephemeral);
+              // printf("Base obtained: %s\n", base);
+              if (base[2] == '-'){
+                char curr = base[1], end = base[3];
+                int j = 0;
+                char * msg;
+                while (curr+j <= end){
+                  msg = (char *)malloc(sizeof(char)*2);
+                  msg[0] = curr+j;
+                  msg[1] = '\0';
+                  // printf("rootstate: %s message: %s\n", root->state, msg);
+                  char * nextstate = (char *)malloc(sizeof(char)*(
+                        strlen(root->state)+2
+                  ));
+                  memset(nextstate, '\0', strlen(root->state)+2);
+                  memcpy(nextstate, root->state, strlen(root->state));
+                  strcat(nextstate, msg);
+                  nextFA = new_automaton(nextstate);
+                  // printf("NextFA created with state: %s\n", nextstate);
+                  NFA_connect(ephemeral, msg, nextFA);
+                  NFA_connect(nextFA, "dot", ephemeral);
+                  // printf("Compiling %c\n", curr+j);
+                  j++;
+                  regex_compile(eatbase(base, substrs[i]), nextFA);
+                }
+              }
+              else{
+                char * msg;
+                for (int j = 1; j < strlen(base)-2; j++){
+                    msg = (char *)malloc(sizeof(char)*2);
+                    msg[0] = base[j];
+                    msg[1] = '\0';
+                    // printf("rootstate: %s message: %s\n", root->state, msg);
+                    char * nextstate = (char *)malloc(sizeof(char)*(
+                        strlen(root->state)+2
+                      ));
+                    memset(nextstate, '\0', strlen(root->state)+2);
+                    memcpy(nextstate, root->state, strlen(root->state));
+                    strcat(nextstate, msg);
+                    nextFA = new_automaton(nextstate);
+                    NFA_connect(ephemeral, msg, nextFA);
+                    NFA_connect(nextFA, "dot", ephemeral);
+                    // printf("Compiling %c\n", base[j]);
+                    regex_compile(eatbase(base, substrs[i]), nextFA);
+                }
+              }
+
+            }
             else if (base[0] == '['){
               //Connect ephemeral state with "dot" message
               // printf("Compiling base in square brackets\n");
@@ -299,7 +352,13 @@ void regex_compile(char * input, automaton root){
                     msg[0] = base[j];
                     msg[1] = '\0';
                     // printf("rootstate: %s message: %s\n", root->state, msg);
-                    nextFA = new_automaton(msg);
+                    char * nextstate = (char *)malloc(sizeof(char)*(
+                        strlen(root->state)+2
+                      ));
+                    memset(nextstate, '\0', strlen(root->state)+2);
+                    memcpy(nextstate, root->state, strlen(root->state));
+                    strcat(nextstate, msg);
+                    nextFA = new_automaton(nextstate);
                     NFA_connect(ephemeral, msg, nextFA);
                     // printf("Compiling %c\n", base[j]);
                     regex_compile(eatbase(base, substrs[i]), nextFA);
