@@ -1,9 +1,5 @@
 #include <repl.h>
 
-char * eval(char * input){
-  return input;
-}
-
 void prompt(){
   printf("rclisp> ");
 }
