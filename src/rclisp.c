@@ -10,6 +10,10 @@ int main(int argc, char ** argv){
     free(input);
     prompt();
     input = read(0);
+    char * clean_input = clean(input);
+    print(clean_input);
+    free(input);
+    tokenize(input);
     print(clean(input));
   }
   return 0;

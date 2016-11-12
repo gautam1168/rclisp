@@ -64,22 +64,57 @@ char * clean(char * rawinput){
         }
         output[i+1] = '\0';
     }
-    //Get start position of all spaces
     int output_length = strlen(output);
     char * comprsd_output = (char *)malloc(output_length*sizeof(char));
     memset(comprsd_output, '\0', output_length*sizeof(char));
     int j = 0;
     bool seen_space = false;
+    //Add spaces around parenthesis
     for (int i = 0; i < output_length; i++){
         if (output[i] == ' ' && !seen_space){
             comprsd_output[j] = output[i];
             seen_space = true;
             j++;
+            if (j >= output_length){
+              resize(comprsd_output, strlen(comprsd_output)*2);
+            }
         }
         else if (output[i] != ' '){
-          comprsd_output[j] = output[i];
+          if (output[i] == '(' || output[i] == ')'){
+            comprsd_output[j] = ' ';
+            comprsd_output[j+1] = output[i];
+            comprsd_output[j+2] = ' ';
+            j += 3;
+            if (j >= output_length){
+              resize(comprsd_output, strlen(comprsd_output)*2);
+            }
+          }
+          else{
+            comprsd_output[j] = output[i];
+            j++;
+          }
           seen_space = false;
-          j++;
+        }
+    }
+    j = 0; seen_space = false;
+    free(output);
+    output = comprsd_output;
+    output_length = strlen(output);
+    comprsd_output = (char *)malloc(output_length*sizeof(char));
+    memset(comprsd_output, '\0', output_length*sizeof(char));
+    for (int i = 0; i < output_length; i++){
+        if (output[i] == ' ' && !seen_space){
+            comprsd_output[j] = output[i];
+            seen_space = true;
+            j++;
+            if (j >= output_length){
+              resize(comprsd_output, strlen(comprsd_output)*2);
+            }
+        }
+        else if (output[i] != ' '){
+            comprsd_output[j] = output[i];
+            seen_space = false;
+            j++;
         }
     }
     return comprsd_output;
