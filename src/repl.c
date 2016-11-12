@@ -117,5 +117,6 @@ char * clean(char * rawinput){
             j++;
         }
     }
+    comprsd_output[output_length] = '\0';
     return comprsd_output;
 }

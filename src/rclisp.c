@@ -1,20 +1,16 @@
 #include <repl.h>
 
 int main(int argc, char ** argv){
-  char * input, * output;
-  input = (char*)malloc(sizeof(char)*2);
-  input[0] = ' ';
-  input[1] = '\0';
+  char * input, * clean_input;
   char dummy;
   while(strcmp(input, "q")){
-    free(input);
     prompt();
     input = read(0);
-    char * clean_input = clean(input);
+    clean_input = clean(input);
     print(clean_input);
+    tokenize(clean_input);
     free(input);
-    tokenize(input);
-    print(clean(input));
+    free(clean_input);
   }
   return 0;
 }

@@ -13,7 +13,9 @@ char ** tokenize(char * input){
   while( input[start] == ' '){
     start++;
   }
+  printf("Input length: %d\n", inputlength);
   for (int i = start; i < inputlength; i++){
+      printf("character: %d %c\n",i, input[i]);
       if (input[i] == ' '){
         numtokens++;
       }
