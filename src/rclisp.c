@@ -10,8 +10,7 @@ int main(int argc, char ** argv){
     free(input);
     prompt();
     input = read(0);
-    output = eval(input);
-    print(output);
+    print(clean(input));
   }
   return 0;
 }

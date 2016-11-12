@@ -1,8 +1,6 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
-char * eval(char * input);
-
 struct s_expression_struct{
 
 };

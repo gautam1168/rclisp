@@ -8,6 +8,7 @@
 
 void prompt();
 char * read(int openparens);
+char * clean(char * rawinput);
 void resize(char * input, int newsize);
 void print(char * output);
 
