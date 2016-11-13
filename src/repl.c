@@ -46,10 +46,6 @@ void resize(char * input, int newsize){
   memcpy(memory, input, newsize/2);
 }
 
-void print(char * output){
-  printf("\t%s\n\n", output);
-}
-
 char * clean(char * rawinput){
     int inputlength = strlen(rawinput);
     char * output = (char *)malloc(inputlength*sizeof(char));

@@ -5,16 +5,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <repl.h>
+#include <stdbool.h>
 
-struct s_expression_struct{
-
+struct expression_struct{
+    bool isatomic;
+    int numitems;
+    struct expression_struct ** subexprs;
+    char * value; //only defined for atomic expressions
 };
-typedef struct s_expression_struct s_expression_t;
-typedef s_expression_t * s_expression;
-s_expression parse(char * input);
+typedef struct expression_struct expression_t;
+typedef expression_t * expression;
+expression parse(char * input);
 
-//value will be a union
-//value eval(s_expression input);
+void print(expression output);
 
 char ** tokenize(char * input);
 int token_arrlen(char ** arr);
