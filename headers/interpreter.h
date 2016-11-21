@@ -17,7 +17,7 @@ typedef struct expression_struct expression_t;
 typedef expression_t * expression;
 expression parse(char ** tokens, int start, int end);
 
-void print(expression output);
+void print(expression output, int recursion_level);
 
 char ** tokenize(char * input);
 int token_arrlen(char ** arr);
