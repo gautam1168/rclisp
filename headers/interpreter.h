@@ -8,14 +8,14 @@
 #include <stdbool.h>
 
 struct expression_struct{
-    bool isatomic;
     int numitems;
+    bool * isatomic;
     struct expression_struct ** subexprs;
-    char * value; //only defined for atomic expressions
+    char ** value; //only defined for atomic expressions
 };
 typedef struct expression_struct expression_t;
 typedef expression_t * expression;
-expression parse(char * input);
+expression parse(char ** tokens, int start, int end);
 
 void print(expression output);
 

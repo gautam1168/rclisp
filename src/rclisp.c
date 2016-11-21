@@ -13,7 +13,7 @@ int main(int argc, char ** argv){
     for (int i = 0; i < token_arrlen(tokens); i++){
         printf("%d: %s\n", i, tokens[i]);
     }
-
+    expression e = parse(tokens, 0, token_arrlen(tokens)-1);
     free(input);
     free(clean_input);
   }
