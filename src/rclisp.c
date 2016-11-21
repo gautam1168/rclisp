@@ -14,7 +14,11 @@ int main(int argc, char ** argv){
     //     printf("%d: %s\n", i, tokens[i]);
     // }
     expression e = parse(tokens, 0, token_arrlen(tokens)-1);
-    print(e, 0);
+    print(execute(e), 0);
+    free(e->isatomic);
+    free(e->value);
+    free(e->subexprs);
+    free(e);
     free(input);
     free(clean_input);
   }

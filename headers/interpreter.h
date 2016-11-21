@@ -21,4 +21,7 @@ void print(expression output, int recursion_level);
 
 char ** tokenize(char * input);
 int token_arrlen(char ** arr);
+expression execute(expression e);
+expression quote(expression e);
+
 #endif

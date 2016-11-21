@@ -69,12 +69,14 @@ void print(expression e, int recursion_level){
         printf("\t");
     }
     printf("( ");
-    for (int i = 0;  i < e->numitems; i++){
-        if (e->isatomic[i]){
-            printf("%s ", e->value[i]);
-        }
-        else{
+    if (e){
+      for (int i = 0;  i < e->numitems; i++){
+          if (e->isatomic[i]){
+              printf("%s ", e->value[i]);
+            }
+          else{
             print(e->subexprs[i], recursion_level+1);
+          }
         }
     }
     printf(" )");
@@ -168,12 +170,27 @@ expression parse(char ** tokens, int start, int end){
   return e;
 }
 
+expression execute(expression e){
+  if (!e->isatomic[0]){
+      printf("Invalid expression\n");
+    }
+    else if(strcmp(e->value[0], "quote") == 0){
+      expression ans = (expression)malloc(sizeof(expression));
 
+      if (e->numitems == 2 && e->isatomic[1] == false){
+          ans = e->subexprs[1];
+      }
+      else{
+          ans->numitems = e->numitems-1;
+          ans->isatomic = e->isatomic+1;
+          ans->value = e->value+1;
+          ans->subexprs = e->subexprs+1;
+      }
+      return ans;
+    }
+    return NULL;
+}
 
-// expression quote(expression){
-//
-// }
-//
 // char * atom(expression){
 //
 // }
