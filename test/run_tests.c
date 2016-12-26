@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <setjmp.h>
 #include <cmocka.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 extern void* _test_malloc(const size_t size, const char* file, const int line);
 extern void* _test_calloc(const size_t number_of_elements, const size_t size, const char* file, const int line);
@@ -53,12 +53,12 @@ void test_memory_leak3(void **state){
 }
 
 int main(int argc, char* argv[]) {
-    const UnitTest test_suit[] = {
-        unit_test(test_string_pass),
-        unit_test(test_string_fail),
-        unit_test(test_memory_leak),
-        unit_test(test_memory_leak2),
-        unit_test(test_memory_leak3)
+    const struct CMUnitTest test_suit[] = {
+        cmocka_unit_test(test_string_pass),
+        cmocka_unit_test(test_string_fail),
+        cmocka_unit_test(test_memory_leak),
+        cmocka_unit_test(test_memory_leak2),
+        cmocka_unit_test(test_memory_leak3)
     };
-    return run_tests(test_suit);
+    return cmocka_run_group_tests(test_suit, NULL, NULL);
 }

@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (rclisp)
 
-set(HOME /home/gaurav)
+set(HOME /Users/gauravgautam)
 
 include_directories(${CMAKE_SOURCE_DIR}/headers
                     ${HOME}/Public/cmocka-1.1.0/include)

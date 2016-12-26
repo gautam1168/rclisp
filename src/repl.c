@@ -21,7 +21,7 @@ char * read(int openparens){
 
     if (c == '\n'){
       char * nextline = read(openparens);
-      resize(input, strlen(input)+strlen(nextline)+1);
+      input = my_resize(input, strlen(input)+strlen(nextline)+1);
       input[strlen(input)] = ' ';
       strcat(input, nextline);
       return input;
@@ -33,86 +33,101 @@ char * read(int openparens){
     loc++;
     if (loc == size-2){
       size = size*2;
-      resize(input, size);
+      input = my_resize(input, size);
     }
   }
 
   return input;
 }
 
-void resize(char * input, int newsize){
+char * my_resize(char * input, int newsize){
   char * memory = (char *)malloc(newsize);
   memset(memory, '\0', newsize);
-  memcpy(memory, input, newsize/2);
+  memcpy(memory, input, strlen(input));
+  free(input);
+  return (char *)memory;
+}
+
+void remove_linebreaks(char * input){
+    int inputlength = strlen(input);
+    //Replace all characters less than 33 with spaces
+    for (int i = 0; i < inputlength; i++){
+        if (input[i] < 33){
+            input[i] = ' ';
+        }
+    }
+}
+
+char * compress_whitespace(char * input){
+  int inputlength = strlen(input);
+  char * output = (char *)malloc(sizeof(char)*inputlength);
+  memset(output, '\0', inputlength*sizeof(char));
+  bool seen_space = false;
+  int j = 0;
+  for (int i = 0; i < inputlength; i++){
+      if (input[i] == ' ' && !seen_space){
+          output[j] = input[i];
+          seen_space = true;
+          j++;
+      }
+      else if (input[i] != ' '){
+          output[j] = input[i];
+          seen_space = false;
+          j++;
+      }
+  }
+  free(input);
+  return output;
+}
+
+//Pad the parenthesis with spaces
+char * padparens(char * input){
+  int inputlength = strlen(input);
+  char * output = (char *)malloc(inputlength*sizeof(char));
+  memset(output, '\0', inputlength*sizeof(char));
+  int j = 0;
+  bool seen_space = false;
+  //Add spaces around parenthesis
+  int availablespace = inputlength;
+  for (int i = 0; i < inputlength; i++){
+      if (input[i] == ' ' && !seen_space){
+          output[j] = input[i];
+          seen_space = true;
+          j++;
+      }
+      else if (input[i] != ' '){
+        if (input[i] == '(' || input[i] == ')'){
+          if (j+3 >= availablespace){
+            output = my_resize(output, availablespace*2);
+            availablespace = availablespace*2;
+          }
+          output[j] = ' ';
+          output[j+1] = input[i];
+          output[j+2] = ' ';
+          j += 3;
+        }
+        else{
+          output[j] = input[i];
+          j++;
+        }
+        seen_space = false;
+      }
+      if (j >= availablespace){
+        output = my_resize(output, availablespace*2);
+        availablespace = availablespace*2;
+      }
+  }
+  free(input);
+  return output;
 }
 
 char * clean(char * rawinput){
-    int inputlength = strlen(rawinput);
-    char * output = (char *)malloc(inputlength*sizeof(char));
-    memset(output, '\0', inputlength*sizeof(char));
-    //Replace all characters less than 33 with spaces
-    for (int i = 0; i < inputlength; i++){
-        if (rawinput[i] < 33){
-            output[i] = ' ';
-        }
-        else {
-          output[i] = rawinput[i];
-        }
-        output[i+1] = '\0';
-    }
-    int output_length = strlen(output);
-    char * comprsd_output = (char *)malloc(output_length*sizeof(char));
-    memset(comprsd_output, '\0', output_length*sizeof(char));
-    int j = 0;
-    bool seen_space = false;
-    //Add spaces around parenthesis
-    for (int i = 0; i < output_length; i++){
-        if (output[i] == ' ' && !seen_space){
-            comprsd_output[j] = output[i];
-            seen_space = true;
-            j++;
-            if (j >= output_length){
-              resize(comprsd_output, strlen(comprsd_output)*2);
-            }
-        }
-        else if (output[i] != ' '){
-          if (output[i] == '(' || output[i] == ')'){
-            comprsd_output[j] = ' ';
-            comprsd_output[j+1] = output[i];
-            comprsd_output[j+2] = ' ';
-            j += 3;
-            if (j >= output_length){
-              resize(comprsd_output, strlen(comprsd_output)*2);
-            }
-          }
-          else{
-            comprsd_output[j] = output[i];
-            j++;
-          }
-          seen_space = false;
-        }
-    }
-    j = 0; seen_space = false;
-    free(output);
-    output = comprsd_output;
-    output_length = strlen(output);
-    comprsd_output = (char *)malloc(output_length*sizeof(char));
-    memset(comprsd_output, '\0', output_length*sizeof(char));
-    for (int i = 0; i < output_length; i++){
-        if (output[i] == ' ' && !seen_space){
-            comprsd_output[j] = output[i];
-            seen_space = true;
-            j++;
-            if (j >= output_length){
-              resize(comprsd_output, strlen(comprsd_output)*2);
-            }
-        }
-        else if (output[i] != ' '){
-            comprsd_output[j] = output[i];
-            seen_space = false;
-            j++;
-        }
-    }
-    comprsd_output[output_length] = '\0';
+    printf("Cleaning rawinput: %s\n", rawinput);
+    remove_linebreaks(rawinput);
+    printf("Without linebreaks: %s\n", rawinput);
+    char * output = padparens(rawinput);
+    printf("Padded parens: %s\n", output);
+    char * comprsd_output = compress_whitespace(output);
+    printf("Compressed output: %s\n", comprsd_output);
     return comprsd_output;
 }

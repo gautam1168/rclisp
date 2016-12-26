@@ -9,6 +9,7 @@
 void prompt();
 char * read(int openparens);
 char * clean(char * rawinput);
-void resize(char * input, int newsize);
+char * my_resize(char * input, int newsize);
+void remove_linebreaks(char * input);
 
 #endif

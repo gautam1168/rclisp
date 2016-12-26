@@ -1,6 +1,6 @@
 #include <regex.h>
 
-int main(int argc, char * argv){
+int main(int argc, char ** argv){
 	printf("Create regex: alpha|beta \n");
     regex regxp = new_regex("alpha|beta");
 	printf("\nTest against string alpha\n");

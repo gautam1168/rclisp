@@ -2,7 +2,7 @@
 #include <interpreter.h>
 
 int main(int argc, char ** argv){
-  char * input, * clean_input;
+  char * input="", * clean_input;
   char dummy;
   while(strcmp(input, "q")){
     prompt();
@@ -19,7 +19,7 @@ int main(int argc, char ** argv){
     free(e->value);
     free(e->subexprs);
     free(e);
-    free(input);
+    // free(input);
     free(clean_input);
   }
   return 0;
