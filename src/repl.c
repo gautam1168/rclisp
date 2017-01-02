@@ -122,12 +122,12 @@ char * padparens(char * input){
 }
 
 char * clean(char * rawinput){
-    printf("Cleaning rawinput: %s\n", rawinput);
+    // printf("Cleaning rawinput: %s\n", rawinput);
     remove_linebreaks(rawinput);
-    printf("Without linebreaks: %s\n", rawinput);
+    // printf("Without linebreaks: %s\n", rawinput);
     char * output = padparens(rawinput);
-    printf("Padded parens: %s\n", output);
+    // printf("Padded parens: %s\n", output);
     char * comprsd_output = compress_whitespace(output);
-    printf("Compressed output: %s\n", comprsd_output);
+    // printf("Compressed output: %s\n", comprsd_output);
     return comprsd_output;
 }

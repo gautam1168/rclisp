@@ -23,5 +23,5 @@ char ** tokenize(char * input);
 int token_arrlen(char ** arr);
 expression execute(expression e);
 expression quote(expression e);
-
+expression atom(expression e);
 #endif
